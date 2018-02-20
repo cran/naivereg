@@ -1,0 +1,14 @@
+f330981894a34bf77ba31aa873942977 *DESCRIPTION
+39512bff82923541c060b0f9c42401d3 *NAMESPACE
+78dc153dade4de685147ffa695d98be1 *R/IVbs.R
+0e66375ea4c6381564c4b437c0347768 *R/IVselect.R
+13c20c1deab07340a5325022467fc7c9 *R/estiv.R
+30d0e62c7512d8e7858ff92bd8e3614f *R/naivegmm.R
+b145eebc4b3da5ab246abc44b712c37f *R/naviegel.R
+5917b9a669cdb2d53e374902b94f5201 *R/naviereg.R
+6d72812b89208a4d8b9261774410261e *data/naivedata.rda
+e42389c8cd635e6cfb97088f8f77cd74 *man/IVselect.Rd
+a56366cfb0ec3697ad4636ba0d08e808 *man/naive.gel.Rd
+8147eb3f46e6e89cd38b04a976354dde *man/naive.gmm.Rd
+4188836e3dd829d15304de1122e226b4 *man/naivedata.Rd
+c8803159066c4827a0d0fafc7be7c0fa *man/naivereg.Rd
