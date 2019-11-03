@@ -60,6 +60,8 @@
 #' @importFrom grpreg grpreg select
 #' @importFrom gmm gmm gel
 #' @importFrom stats AIC BIC logLik
+#' @importFrom ncvreg ncvreg cv.ncvreg
+#' @importFrom stats glm lm
 #' @export
 
 
