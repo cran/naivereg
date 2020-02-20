@@ -4,61 +4,68 @@
 \alias{naive.gmm}
 \title{Estimete the parameters with gmm after IV selecting}
 \usage{
-naive.gmm(g, x, z, max.degree = 10, criterion = c("BIC", "AIC", "GCV",
-  "AICc", "EBIC"), df.method = c("default", "active"),
+naive.gmm(
+  g,
+  x,
+  z,
+  max.degree = 10,
+  criterion = c("BIC", "AIC", "GCV", "AICc", "EBIC"),
+  df.method = c("default", "active"),
   penalty = c("grLasso", "grMCP", "grSCAD", "gel", "cMCP"),
-  endogenous.index = c(), IV.intercept = FALSE, family = c("gaussian",
-  "binomial", "poisson"), ...)
+  endogenous.index = c(),
+  IV.intercept = FALSE,
+  family = c("gaussian", "binomial", "poisson"),
+  ...
+)
 }
 \arguments{
 \item{g}{A function of the form \eqn{g(\theta,x)} and which returns a \eqn{n \times q} matrix with typical element \eqn{g_i(\theta,x_t)} for \eqn{i=1,...q} and \eqn{t=1,...,n}. This matrix is then used to build the q sample moment conditions. It can also be a formula if the model is linear  (see details gmm).}
 
-\item{x}{The design matrix, without an intercept}
+\item{x}{The design matrix, without an intercept.}
 
-\item{z}{The instrument variables matrix}
+\item{z}{The instrument variables matrix.}
 
 \item{max.degree}{The upper limit value of degree of B-splines when using BIC/AIC to choose the tuning parameters, default is BIC.}
 
-\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
+\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC", default is "BIC".}
 
-\item{df.method}{How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg. default is "default".}
+\item{df.method}{How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg, default is "default".}
 
-\item{penalty}{The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP. Default is " grLasso".}
+\item{penalty}{The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP, default is " grLasso".}
 
-\item{endogenous.index}{Specify which variables in design matrix are endogenous variables, the  variable corresponds to the value 1 is endogenous variables,  the  variable corresponds to the value 0  is exogenous variable, the default is all endogenous variables}
+\item{endogenous.index}{Specify which variables in design matrix are endogenous variables, the variable corresponds to the value 1 is endogenous variables,  the  variable corresponds to the value 0 is exogenous variable, the default is all endogenous variables.}
 
-\item{IV.intercept}{Intercept of instrument variables, default is “FALSE”}
+\item{IV.intercept}{Intercept of instrument variables, default is “FALSE”.}
 
-\item{family}{Either "gaussian" or "binomial", depending on the response.default is " gaussian "}
+\item{family}{Either "gaussian" or "binomial", depending on the response.default is " gaussian ".}
 
 \item{...}{Arguments passed to gmm (such as type,kernel...,detail see gmm).}
 }
 \value{
 An object of type \code{naive.gmm} which is a list with the following
 components:
-\item{degree}{degree of B-splines}
-\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
-\item{ind}{the index of selected instrument variables}
-\item{ind.b}{the index of selected instrument variables after B-splines}
-\item{gmm}{gmm object, detail see gmm}
+\item{degree}{Degree of B-splines.}
+\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC", default is "BIC".}
+\item{ind}{The index of selected instrument variables.}
+\item{ind.b}{The index of selected instrument variables after B-splines.}
+\item{gmm}{Gmm object, detail see gmm.}
 }
 \description{
-Using gmm to make use of selected tools
+Hybrid gmm estimator after selecting IVs in the reduced form equation.
 }
 \details{
-See naivereg and gmm
+See naivereg and gmm.
 }
 \examples{
-#gmm after IV selecting
+# gmm estimation after IV selection
 data("naivedata")
 x=naivedata[,1]
 y=naivedata[,2]
-z=naivedata[,3:102]
+z=naivedata[,3:22]
 naive.gmm(y~x+x^2,cbind(x,x^2),z)
-naive.gmm(y~exp(x)+x,cbind(x,exp(x)),z)
 }
 \references{
-Q. Fan and W. Zhong (2017), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
+Q. Fan and W. Zhong (2018), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
 
 Caner, M. and Fan, Q. (2015), Hybrid GEL Estimators: Instrument Selection with Adaptive Lasso, Journal of Econometrics, Volume 187, 256–274.
 }

@@ -4,52 +4,57 @@
 \alias{naivereg}
 \title{Nonparametric additive instrumental variable estimator}
 \usage{
-naivereg(y, x, z, max.degree = 10, intercept = TRUE, criterion = c("BIC",
-  "AIC", "GCV", "AICc", "EBIC"), df.method = c("default", "active"),
+naivereg(
+  y,
+  x,
+  z,
+  max.degree = 10,
+  intercept = TRUE,
+  criterion = c("BIC", "AIC", "GCV", "AICc", "EBIC"),
+  df.method = c("default", "active"),
   penalty = c("grLasso", "grMCP", "grSCAD", "gel", "cMCP"),
-  endogenous.index = c(), IV.intercept = FALSE, family = c("gaussian",
-  "binomial", "poisson"))
+  endogenous.index = c(),
+  IV.intercept = FALSE,
+  family = c("gaussian", "binomial", "poisson")
+)
 }
 \arguments{
-\item{y}{Response variable, a matrix Nx1}
+\item{y}{Response variable, a matrix N x 1.}
 
-\item{x}{The design matrix, without an intercept}
+\item{x}{The design matrix, without an intercept.}
 
-\item{z}{The instrument variables matrix}
+\item{z}{The instrument variables matrix.}
 
 \item{max.degree}{The upper limit value of degree of B-splines when using BIC/AIC to choose the tuning parameters, default is BIC.}
 
-\item{intercept}{Estimate with intercept or not, default is "TRUE"}
+\item{intercept}{Estimate with intercept or not, default is "TRUE".}
 
-\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
+\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC", default is "BIC".}
 
-\item{df.method}{How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg. default is "default".}
+\item{df.method}{How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg, default is "default".}
 
-\item{penalty}{The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP. Default is " grLasso".}
+\item{penalty}{The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP, default is " grLasso".}
 
-\item{endogenous.index}{Specify which variables in design matrix are endogenous variables, the  variable corresponds to the value 1 is endogenous variables,  the  variable corresponds to the value 0  is exogenous variable, the default is all endogenous variables}
+\item{endogenous.index}{Specify which variables in design matrix are endogenous variables, the  variable corresponds to the value 1 is endogenous variables, thevariable corresponds to the value 0 is exogenous variable, the default is all endogenous variables.}
 
-\item{IV.intercept}{Intercept of instrument variables, default is “FALSE”}
+\item{IV.intercept}{Intercept of instrument variables, default is “FALSE”.}
 
-\item{family}{Either "gaussian" or "binomial", depending on the response.default is " gaussian "}
+\item{family}{Either "gaussian" or "binomial", depending on the response.default is " gaussian ".}
 }
 \value{
 An object of type \code{naivereg} which is a list with the following
 components:
-\item{coefficients}{a vector of coefficients}
-\item{ste}{the standard deviation of the coefficients}
-\item{n}{number of samples}
-\item{degree}{degree of B-splines}
-\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
-\item{ind}{the index of selected instrument variables}
-\item{ind.b}{the index of selected instrument variables after B-splines}
-\item{res}{the difference between the predicted y and the actual y}
+\item{coefficients}{A vector of coefficients.}
+\item{ste}{The standard deviation of the coefficients.}
+\item{n}{Number of samples.}
+\item{degree}{Degree of B-splines.}
+\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC"; default is "BIC".}
+\item{ind}{The index of selected instrument variables.}
+\item{ind.b}{The index of selected instrument variables after B-splines.}
+\item{res}{The difference between the predicted y and the actual y.}
 }
 \description{
-NAIVE is the nonparametric additive instrumental variable estimator with the
-adaptive group Lasso. It is using group lasso and B-splines to obtain the valid instrument
-variables where BIC or EBIC are applied to choose the tuning parameters. Then we get the
-two-stage least squares (2SLS) estimator with selected IV.
+NAIVE is the nonparametric additive instrumental variable estimator with the adaptive group Lasso. It uses group lasso and B-splines to obtain the valid instrument variables where BIC are applied to choose the tuning parameters. Then we get the two-stage least squares (2SLS) estimator with selected IV.
 }
 \details{
 Consider the following structural equation with endogenous regressors\eqn{Y_{i}= x_{u}^{T}\beta+ \epsilon_{i}}
@@ -76,14 +81,14 @@ library(naivereg)
 data("naivedata")
 x=naivedata[,1]
 y=naivedata[,2]
-z=naivedata[,3:102]
+z=naivedata[,3:22]
 #estimate with intercept
 naive_intercept= naivereg(y,x,z)
-#estimate without intercept,criterion:EBIC
-naive_without_intercept = naivereg(y,x,z,intercept=FALSE,criterion='EBIC')
+#estimate without intercept,criterion:AIC
+naive_without_intercept = naivereg(y,x,z,intercept=FALSE,criterion='AIC')
 }
 \references{
-Q. Fan and W. Zhong (2017), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
+Q. Fan and W. Zhong (2018), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
 
 Caner, M. and Fan, Q. (2015), Hybrid GEL Estimators: Instrument Selection with Adaptive Lasso, Journal of Econometrics, Volume 187, 256–274.
 }

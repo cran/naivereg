@@ -2,47 +2,53 @@
 % Please edit documentation in R/IVselect.R
 \name{IVselect}
 \alias{IVselect}
-\title{Selecting instrument variables using group lasso and B-splines}
+\title{Selecting instrument variables using group lasso and B-splines in naivereg}
 \usage{
-IVselect(z, x, max.degree = 10, criterion = c("BIC", "AIC", "GCV", "AICc",
-  "EBIC"), df.method = c("default", "active"), penalty = c("grLasso",
-  "grMCP", "grSCAD", "gel", "cMCP"), endogenous.index = c(),
-  IV.intercept = FALSE, family = c("gaussian", "binomial", "poisson"))
+IVselect(
+  z,
+  x,
+  max.degree = 10,
+  criterion = c("BIC", "AIC", "GCV", "AICc", "EBIC"),
+  df.method = c("default", "active"),
+  penalty = c("grLasso", "grMCP", "grSCAD", "gel", "cMCP"),
+  endogenous.index = c(),
+  IV.intercept = FALSE,
+  family = c("gaussian", "binomial", "poisson")
+)
 }
 \arguments{
-\item{z}{The instrument variables matrix}
+\item{z}{The instrument variables matrix.}
 
-\item{x}{The design matrix, without an intercept}
+\item{x}{The design matrix.}
 
 \item{max.degree}{The upper limit value of degree of B-splines when using BIC/AIC to choose the tuning parameters, default is BIC.}
 
-\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
+\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC", default is "BIC".}
 
-\item{df.method}{How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg. default is "default".}
+\item{df.method}{How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg, default is "default".}
 
 \item{penalty}{The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP. Default is " grLasso".}
 
-\item{endogenous.index}{Specify which variables in design matrix are endogenous variables, the  variable corresponds to the value 1 is endogenous variables,  the  variable corresponds to the value 0  is exogenous variable, the default is all endogenous variables}
+\item{endogenous.index}{Specify which variables in design matrix are endogenous variables, the variable corresponds to the value 1 is endogenous variables, the variable corresponds to the value 0 is exogenous variable, default is all endogenous variables.}
 
-\item{IV.intercept}{Intercept of instrument variables, default is “FALSE”}
+\item{IV.intercept}{Intercept of instrument variables, default is “FALSE”.}
 
-\item{family}{Either "gaussian" or "binomial", depending on the response.default is " gaussian "}
+\item{family}{Either "gaussian" or "binomial", depending on the response, default is "gaussian".}
 }
 \value{
 An object of type \code{IVselect} which is a list with the following
 components:
-\item{degree}{degree of B-splines}
-\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
-\item{ind}{the index of selected instrument variables}
-\item{ind.b}{the index of selected instrument variables after B-splines}
-\item{IVselect}{The instrument variables after B-splines}
+\item{degree}{Degree of B-splines.}
+\item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", "EBIC", default is "BIC".}
+\item{ind}{The index of selected instrument variables.}
+\item{ind.b}{The index of selected instrument variables after B-splines.}
+\item{IVselect}{The instrument variables after B-splines.}
 }
 \description{
-Using group lasso and B-splines to obtain the group Lasso estimator where BIC or EBIC are applied to choose the tuning parameters  and (degree of B-splines) . And using the group
-Lasso estimator to obtain the valid instrument variables
+This shows which IVs are selected in the naivereg function.
 }
 \details{
-See naivereg
+See naivereg.
 }
 \examples{
 #IV selecting with group Lasso an B-splines
@@ -50,14 +56,14 @@ library(naivereg)
 data("naivedata")
 x=naivedata[,1]
 y=naivedata[,2]
-z=naivedata[,3:102]
+z=naivedata[,3:22]
 IV = IVselect(z,x)
 IV$IVselect	#show the IV selected after B-splines
 }
 \references{
-Q. Fan and W. Zhong (2017), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
+Q. Fan and W. Zhong (2018), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
 
-Caner, M. and Fan, Q. (2015), Hybrid GEL Estimators: Instrument Selection with Adaptive Lasso, Journal of Econometrics, Volume 187, 256–274.
+Caner, M. and Q. Fan (2015), Hybrid GEL Estimators: Instrument Selection with Adaptive Lasso, Journal of Econometrics, 187, 256–274.
 }
 \author{
 Qingliang Fan, KongYu He, Wei Zhong

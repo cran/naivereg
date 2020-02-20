@@ -1,35 +1,34 @@
 #' @title Estimete the parameters with gmm after IV selecting
-#' @description Using gmm to make use of selected tools
+#' @description Hybrid gmm estimator after selecting IVs in the reduced form equation.
 #' @param g A function of the form \eqn{g(\theta,x)} and which returns a \eqn{n \times q} matrix with typical element \eqn{g_i(\theta,x_t)} for \eqn{i=1,...q} and \eqn{t=1,...,n}. This matrix is then used to build the q sample moment conditions. It can also be a formula if the model is linear  (see details gmm).
-#' @param x The design matrix, without an intercept
-#' @param z The instrument variables matrix
+#' @param x The design matrix, without an intercept.
+#' @param z The instrument variables matrix.
 #' @param max.degree The upper limit value of degree of B-splines when using BIC/AIC to choose the tuning parameters, default is BIC.
-#' @param criterion The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".
-#' @param df.method How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg. default is "default".
-#' @param penalty The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP. Default is " grLasso".
-#' @param endogenous.index Specify which variables in design matrix are endogenous variables, the  variable corresponds to the value 1 is endogenous variables,  the  variable corresponds to the value 0  is exogenous variable, the default is all endogenous variables
-#' @param IV.intercept Intercept of instrument variables, default is “FALSE”
-#' @param family Either "gaussian" or "binomial", depending on the response.default is " gaussian "
+#' @param criterion The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC", default is "BIC".
+#' @param df.method How should effective model parameters be calculated? One of: "active", which counts the number of nonzero coefficients; or "default", which uses the calculated df returned by grpreg, default is "default".
+#' @param penalty The penalty to be applied to the model. For group selection, one of grLasso, grMCP, or grSCAD. For bi-level selection, one of gel or cMCP, default is " grLasso".
+#' @param endogenous.index Specify which variables in design matrix are endogenous variables, the variable corresponds to the value 1 is endogenous variables,  the  variable corresponds to the value 0 is exogenous variable, the default is all endogenous variables.
+#' @param IV.intercept Intercept of instrument variables, default is “FALSE”.
+#' @param family Either "gaussian" or "binomial", depending on the response.default is " gaussian ".
 #' @param ... Arguments passed to gmm (such as type,kernel...,detail see gmm).
-#' @details See naivereg and gmm
+#' @details See naivereg and gmm.
 #' @return An object of type \code{naive.gmm} which is a list with the following
 #' components:
-#' \item{degree}{degree of B-splines}
-#' \item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc", or "EBIC"; default is "BIC".}
-#' \item{ind}{the index of selected instrument variables}
-#' \item{ind.b}{the index of selected instrument variables after B-splines}
-#' \item{gmm}{gmm object, detail see gmm}
+#' \item{degree}{Degree of B-splines.}
+#' \item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC", default is "BIC".}
+#' \item{ind}{The index of selected instrument variables.}
+#' \item{ind.b}{The index of selected instrument variables after B-splines.}
+#' \item{gmm}{Gmm object, detail see gmm.}
 #' @author Qingliang Fan, KongYu He, Wei Zhong
-#' @references Q. Fan and W. Zhong (2017), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
+#' @references Q. Fan and W. Zhong (2018), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
 #' @references Caner, M. and Fan, Q. (2015), Hybrid GEL Estimators: Instrument Selection with Adaptive Lasso, Journal of Econometrics, Volume 187, 256–274.
 #' @examples
-#'#gmm after IV selecting
+#'# gmm estimation after IV selection
 #'data("naivedata")
 #'x=naivedata[,1]
 #'y=naivedata[,2]
-#'z=naivedata[,3:102]
+#'z=naivedata[,3:22]
 #'naive.gmm(y~x+x^2,cbind(x,x^2),z)
-#'naive.gmm(y~exp(x)+x,cbind(x,exp(x)),z)
 #' @export
 naive.gmm <- function(g,x,z,max.degree=10,criterion=c("BIC","AIC","GCV","AICc","EBIC"),
                            df.method=c("default","active"),penalty = c("grLasso", "grMCP", "grSCAD", "gel", "cMCP"),endogenous.index=c(),IV.intercept=FALSE,

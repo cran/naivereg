@@ -4,19 +4,26 @@
 \alias{LIVE}
 \title{Logistic-regression Instrumental Variables Estimator}
 \usage{
-LIVE(y, x, z, family = c("gaussian", "poisson", "binomial", "multinomial",
-  "cox", "mgaussian"), penalty = c("SCAD", "MCP", "lasso"), nfolds = 5,
-  endogenous.index = c(), gamma = 3.7, alpha = 1, lambda.min = 0.05,
-  nlambda = 100, ...)
+LIVE(
+  y,
+  x,
+  z,
+  penalty = c("SCAD", "MCP", "lasso"),
+  nfolds = 5,
+  endogenous.index = c(),
+  gamma = 3.7,
+  alpha = 1,
+  lambda.min = 0.05,
+  nlambda = 100,
+  ...
+)
 }
 \arguments{
-\item{y}{Response variable, an Nx1 vector.}
+\item{y}{Response variable, an N x 1 vector.}
 
 \item{x}{The design matrix, including endogenous variable, the value of endogenous variable is 0 or 1 (binary).}
 
 \item{z}{The instrumental variables matrix.}
-
-\item{family}{Quantitative for family="gaussian", or family="poisson" (non-negative counts). For family="binomial" should be either a factor with two levels, or a two-column matrix of counts or proportions (the second column is treated as the target class; for a factor, the last level in alphabetical order is the target class). For family="multinomial", can be a nc>=2 level factor, or a matrix with nc columns of counts or proportions. For either "binomial" or "multinomial", if y is presented as a vector, it will be coerced into a factor. For family="cox", y should be a two-column matrix with columns named 'time' and 'status'. The latter is a binary variable, with '1' indicating death, and '0' indicating right censored. The function Surv() in package survival produces such a matrix. For family="mgaussian", y is a matrix of quantitative responses.}
 
 \item{penalty}{The penalty to be applied to the model. Either "SCAD" (the default), "MCP", or "lasso".}
 
@@ -28,9 +35,9 @@ LIVE(y, x, z, family = c("gaussian", "poisson", "binomial", "multinomial",
 
 \item{alpha}{Tuning parameter for the Mnet estimator which controls the relative contributions from the MCP/SCAD penalty and the ridge, or L2 penalty. alpha=1 is equivalent to MCP/SCAD penalty, while alpha=0 would be equivalent to ridge regression. However, alpha=0 is not supported; alpha may be arbitrarily small, but not exactly 0.}
 
-\item{lambda.min}{The smallest value for lambda, as a fraction of lambda.max. Default is 0.05}
+\item{lambda.min}{The smallest value for lambda, as a fraction of lambda.max, default is 0.05.}
 
-\item{nlambda}{The number of lambda values. Default is 100.}
+\item{nlambda}{The number of lambda values, default is 100.}
 
 \item{...}{other arguments.}
 }
@@ -42,12 +49,11 @@ components:
 \item{ind}{The selected variables of z.}
 \item{Xhat}{The xhat estimated by z.}
 \item{IVnum}{The number of instrumented variables after filtering.}
-\item{family}{Same as above.}
 \item{penalty}{Same as above.}
 \item{alpha}{Same as above.}
 }
 \description{
-A two-stage approach to estimate endogenous treatment effects using high-dimensional instrumental variables.
+Binary endogenous variables are commonly encountered in program evaluations using observational data. This is a two-stage approach to estimate the dummy endogenous treatment effect using high-dimensional instrumental variables (IV). In the first stage, we use a penalized logistic reduced form model to accommodate both the binary nature of the endogenous treatment and the high-dimensionality of instrumental variables. In the second stage, we replace the original treatment variable by its estimated propensity score and run a least squares regression to obtain a penalized Logistic-regression Instrumental Variables Estimator (LIVE). If the structural equation model is also high-dimensional, one could use DS-LIVE in this package for selecting both the control variables and IVs.
 }
 \details{
 This is a two stage estimation. In the first stage, a high-dimensional logistic reduced form model with penalty (such as SCAD, lasso, etc.) is used to approximate the optimal instrument. In the second stage, we replace the original treatment variable by its estimated propensity score and run a least squares regression to obtain the penalized Logistic-regression Instrumental Variables Estimator (LIVE). The large dimensional IV could be the original variables or the functional transformations such as series, B-spline functions, etc.
@@ -58,10 +64,10 @@ data("LIVEdata")
 y=LIVEdata[,1]
 x=LIVEdata[,2]
 z=LIVEdata[,3:52]
-res = LIVE(y,x,z,family='binomial',penalty='SCAD',gamma = 3.7,alpha = 1,lambda.min = 0.05)
+res = LIVE(y,x,z,penalty='SCAD',gamma = 3.7,alpha = 1,lambda.min = 0.05)
 }
 \references{
-Wei Zhong, Wei Zhou, Qingliang Fan and Yang Gao (2019), “Estimating Endogenous Treatment Effect Using High-Dimensional Instruments with an Application to the Olympic Effect”
+Wei Zhong, Wei Zhou, Qingliang Fan and Yang Gao (2020), “Dummy Endogenous Treatment Effect Estimation Using High-Dimensional Instrumental Variables”, working paper.
 }
 \author{
 Qingliang Fan, KongYu He, Wei Zhong
