@@ -6,6 +6,8 @@
 
 library(MASS)
 
+n=100
+
 mu<-rep(0,50)
 
 var<-matrix(,50,50)

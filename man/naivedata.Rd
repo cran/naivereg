@@ -5,7 +5,7 @@
 
 x = sin(z1)+exp(z5)+z4^2+z15+log(z19+8)+e1.
 
-y = 2*x+e2.
+y = 0.5*x+e2.
   \itemize{
     \item Columns 1: The design matrix x.
     \item Columns 2: The response variable y.

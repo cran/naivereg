@@ -44,14 +44,22 @@ naivereg(
 \value{
 An object of type \code{naivereg} which is a list with the following
 components:
-\item{coefficients}{A vector of coefficients.}
-\item{ste}{The standard deviation of the coefficients.}
+\item{beta.endogenous}{The coefficient of endogenous variable.}
+\item{beta.exogenous}{The coefficient of exogenous variable.}
+\item{std.endogenous}{The standard deviation of the endogenous variables' coefficients.}
+\item{std.exogenous}{The standard deviation of the exogenous variables' coefficients.}
 \item{n}{Number of samples.}
-\item{degree}{Degree of B-splines.}
+\item{degree}{Degree of B-splines. }
 \item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC"; default is "BIC".}
-\item{ind}{The index of selected instrument variables.}
-\item{ind.b}{The index of selected instrument variables after B-splines.}
+\item{ind}{The index of selected instrument variables. Each row represents the instrumental variable selected for the corresponding endogenous variable. The order of the endogenous variables is from left to right in x.}
+\item{ind.b}{The index of selected instrument variables after B-splines. Each row represents the instrumental variable selected for the corresponding endogenous variable. The order of the endogenous variables is from left to right in x.}
 \item{res}{The difference between the predicted y and the actual y.}
+\item{t.endogenous}{The t-value of the endogenous variables' coefficients.}
+\item{t.exogenous}{The t-value of the exogenous variables' coefficients.}
+\item{endogenous.conf.interval.lower}{The lower bound of 95 percent confidence interval for endogenous variables.}
+\item{endogenous.conf.interval.upper}{The upper bound of 95 percent confidence interval for endogenous variables.}
+\item{exogenous.conf.interval.lower}{The lower bound of 95 percent confidence interval for exogenous variables.}
+\item{exogenous.conf.interval.upper}{The upper bound of 95 percent confidence interval for exogenous variables.}
 }
 \description{
 NAIVE is the nonparametric additive instrumental variable estimator with the adaptive group Lasso. It uses group lasso and B-splines to obtain the valid instrument variables where BIC are applied to choose the tuning parameters. Then we get the two-stage least squares (2SLS) estimator with selected IV.

@@ -31,14 +31,22 @@
 #'
 #' @return An object of type \code{naivereg} which is a list with the following
 #' components:
-#' \item{coefficients}{A vector of coefficients.}
-#' \item{ste}{The standard deviation of the coefficients.}
+#' \item{beta.endogenous}{The coefficient of endogenous variable.}
+#' \item{beta.exogenous}{The coefficient of exogenous variable.}
+#' \item{std.endogenous}{The standard deviation of the endogenous variables' coefficients.}
+#' \item{std.exogenous}{The standard deviation of the exogenous variables' coefficients.}
 #' \item{n}{Number of samples.}
-#' \item{degree}{Degree of B-splines.}
+#' \item{degree}{Degree of B-splines. }
 #' \item{criterion}{The criterion by which to select the regularization parameter. One of "AIC", "BIC", "GCV", "AICc","EBIC"; default is "BIC".}
-#' \item{ind}{The index of selected instrument variables.}
-#' \item{ind.b}{The index of selected instrument variables after B-splines.}
+#' \item{ind}{The index of selected instrument variables. Each row represents the instrumental variable selected for the corresponding endogenous variable. The order of the endogenous variables is from left to right in x.}
+#' \item{ind.b}{The index of selected instrument variables after B-splines. Each row represents the instrumental variable selected for the corresponding endogenous variable. The order of the endogenous variables is from left to right in x.}
 #' \item{res}{The difference between the predicted y and the actual y.}
+#' \item{t.endogenous}{The t-value of the endogenous variables' coefficients.}
+#' \item{t.exogenous}{The t-value of the exogenous variables' coefficients.}
+#' \item{endogenous.conf.interval.lower}{The lower bound of 95 percent confidence interval for endogenous variables.}
+#' \item{endogenous.conf.interval.upper}{The upper bound of 95 percent confidence interval for endogenous variables.}
+#' \item{exogenous.conf.interval.lower}{The lower bound of 95 percent confidence interval for exogenous variables.}
+#' \item{exogenous.conf.interval.upper}{The upper bound of 95 percent confidence interval for exogenous variables.}
 #' @author Qingliang Fan, KongYu He, Wei Zhong
 #' @references Q. Fan and W. Zhong (2018), “Nonparametric Additive Instrumental Variable Estimator: A Group Shrinkage Estimation Perspective,” Journal of Business & Economic Statistics, doi: 10.1080/07350015.2016.1180991.
 #' @references Caner, M. and Fan, Q. (2015), Hybrid GEL Estimators: Instrument Selection with Adaptive Lasso, Journal of Econometrics, Volume 187, 256–274.
@@ -69,9 +77,7 @@ naivereg <- function(y,x,z,max.degree=10,intercept=TRUE,criterion=c("BIC","AIC",
   if(dim(as.matrix(z))[2]<dim(as.matrix(x))[2]){
     stop('The number of selected instruments is less than the number of endogenous variables, please find other instruments')
   }
-  x=as.matrix(x)
-  z=as.matrix(z)
-  y=as.matrix(y)
+
   if(max.degree <= 3){
     stop("max.degree is at least 3")
   }
@@ -91,16 +97,97 @@ naivereg <- function(y,x,z,max.degree=10,intercept=TRUE,criterion=c("BIC","AIC",
     family='gaussian'
   }
 
+  x=as.matrix(x)
+  z=as.matrix(z)
+  y=as.matrix(y)
+
   z=cbind(z,x[,endogenous.index!=1])
-  x=x[,endogenous.index]
+  pz = ncol(z)
 
+  x_endogenous= as.matrix(x[,endogenous.index==1])
+  x_exogenous = as.matrix(x[,endogenous.index!=1])
 
-  IV<-IVselect(z,x,criterion=criterion,df.method=df.method,penalty=penalty,IV.intercept=IV.intercept,family=family)
-  naivelasso <- est.iv(y,x,IV$IVselect,intercept)
+  p1 = ncol(as.matrix(x_endogenous))
+  p2 = ncol(as.matrix(x_exogenous))
 
-  list(coefficients=naivelasso$coefficients,ste=naivelasso$ste,n=naivelasso$n,degree=IV$degree,criterion=criterion,
-       ind=IV$ind,ind.b=IV$ind.b,res=naivelasso$residuals)
+  ind_all = c()
+  ind.b_all = c()
+  xhat = c()
+  degree_all = c()
 
-}
+  for (i in seq(1,p1,1)) {
+    IV<-IVselect(z,x_endogenous[,i],criterion=criterion,df.method=df.method,penalty=penalty,IV.intercept=IV.intercept,family=family)
+
+    degree_all = cbind(degree_all,IV$degree)
+
+     if(IV.intercept==FALSE){
+      est_iv  = lm(x_endogenous[,i]~IV$IVselect-1)
+      xhat_temp = IV$IVselect%*%as.matrix(est_iv$coefficients)
+      xhat = cbind(xhat,xhat_temp)
+    }else{
+      est_iv  = lm(x_endogenous[,i]~IV$IVselect)
+      xhat_temp = IV$IVselect%*%as.matrix(est_iv$coefficients)
+      xhat = cbind(xhat,xhat_temp)
+    }
+
+    ind = IV$ind
+    ind[(length(ind)+1):pz] = NA
+    ind_all=rbind(ind_all,ind)
+
+    ind.b = IV$ind.b
+    ind.b[(length(ind.b)+1):(pz*10)] = NA
+    ind.b_all=rbind(ind.b_all,ind.b)
+  }
+  ind_all<-ind_all[,-which(apply(ind_all,2,function(x) all(is.na(x))))]
+  ind.b_all<-ind.b_all[,-which(apply(ind.b_all,2,function(x) all(is.na(x))))]
+  if(p1>1){
+    rownames(ind_all)=seq(1,p1,1)
+    rownames(ind.b_all)=seq(1,p1,1)
+  }
+
+  naivelasso <- est.iv(y,x_endogenous,x_exogenous,xhat,intercept)
+  if(intercept==TRUE){
+    p2=p2+1
+  }
+  if(p1==1){
+    degree_all=degree_all[1]
+  }
+  endogenous.conf.interval.lower = naivelasso$coefficients[1:p1]-1.96*naivelasso$ste[1:p1]
+  endogenous.conf.interval.upper = naivelasso$coefficients[1:p1]+1.96*naivelasso$ste[1:p1]
+  exogenous.conf.interval.lower = naivelasso$coefficients[(p1+1):(p1+p2)]-1.96*naivelasso$ste[(p1+1):(p1+p2)]
+  exogenous.conf.interval.upper = naivelasso$coefficients[(p1+1):(p1+p2)]+1.96*naivelasso$ste[(p1+1):(p1+p2)]
+  if(p2>0){
+    t.endogenous = naivelasso$coefficients[1:p1]/naivelasso$ste[1:p1]
+    t.exogenous = naivelasso$coefficients[(p1+1):(p1+p2)]/naivelasso$ste[(p1+1):(p1+p2)]
+
+    endogenous.conf.interval.lower = naivelasso$coefficients[1:p1]-1.96*naivelasso$ste[1:p1]
+    endogenous.conf.interval.upper = naivelasso$coefficients[1:p1]+1.96*naivelasso$ste[1:p1]
+    exogenous.conf.interval.lower = naivelasso$coefficients[(p1+1):(p1+p2)]-1.96*naivelasso$ste[(p1+1):(p1+p2)]
+    exogenous.conf.interval.upper = naivelasso$coefficients[(p1+1):(p1+p2)]+1.96*naivelasso$ste[(p1+1):(p1+p2)]
+
+    lst=list(beta.endogenous=naivelasso$coefficients[1:p1],beta.exogenous=naivelasso$coefficients[(p1+1):(p1+p2)],
+         std.endogenous=naivelasso$ste[1:p1],std.exogenous=naivelasso$ste[(p1+1):(p1+p2)],
+         n=naivelasso$n,degree=degree_all,criterion=criterion,ind=ind_all,ind.b=ind.b_all,res=naivelasso$residuals
+         ,t.endogenous=t.endogenous,t.exogenous=t.exogenous,
+         endogenous.conf.interval.lower=endogenous.conf.interval.lower,endogenous.conf.interval.upper=endogenous.conf.interval.upper,
+         exogenous.conf.interval.lower=exogenous.conf.interval.lower,exogenous.conf.interval.upper=exogenous.conf.interval.upper)
+  }else{
+    t.endogenous = naivelasso$coefficients[1:p1]/naivelasso$ste[1:p1]
+    t.exogenous = NA
+
+    endogenous.conf.interval.lower = naivelasso$coefficients[1:p1]-1.96*naivelasso$ste[1:p1]
+    endogenous.conf.interval.upper = naivelasso$coefficients[1:p1]+1.96*naivelasso$ste[1:p1]
+    exogenous.conf.interval.lower = NA
+    exogenous.conf.interval.upper = NA
+    lst = list(beta.endogenous=naivelasso$coefficients[1:p1],beta.exogenous=NA,
+         std.endogenous=naivelasso$ste[1:p1],std.exogenous=NA,
+          n=naivelasso$n,degree=degree_all,criterion=criterion,ind=ind_all,ind.b=ind.b_all,res=naivelasso$residuals
+         ,t.endogenous=t.endogenous,t.exogenous=t.exogenous,
+         endogenous.conf.interval.lower=endogenous.conf.interval.lower,endogenous.conf.interval.upper=endogenous.conf.interval.upper,
+         exogenous.conf.interval.lower=exogenous.conf.interval.lower,exogenous.conf.interval.upper=exogenous.conf.interval.upper)
+  }
+  print(lst[1:10])
+  invisible(lst)
+  }
 
 
